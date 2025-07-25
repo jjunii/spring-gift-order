@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.dto.KakaoMemberResponseDto;
 import gift.dto.KakaoTokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +44,16 @@ public class KakaoAuthService {
             throw new RuntimeException("카카오 액세스 토큰 발급 실패");
         }
         return kakaoTokenResponseDto.accessToken();
+    }
+
+    public KakaoMemberResponseDto getMemberInfo(String accessToken) {
+        String url = "https://kapi.kakao.com/v2/user/me";
+
+        return restClient.get()
+                         .uri(url)
+                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                         .retrieve()
+                         .body(KakaoMemberResponseDto.class);
     }
 
 }

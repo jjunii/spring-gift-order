@@ -1,5 +1,6 @@
 package gift.controller;
 
+import gift.dto.KakaoMemberResponseDto;
 import gift.service.KakaoAuthService;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,9 +46,10 @@ public class KakaoAuthController {
     }
 
     @GetMapping("/auth/kakao/callback")
-    public ResponseEntity<String> kakaoLogin(@RequestParam("code") String code) {
+    public ResponseEntity<KakaoMemberResponseDto> kakaoLogin(@RequestParam("code") String code) {
 
-        return ResponseEntity
-                .ok(kakaoAuthService.getAccessToken(code));
+        String accessToken = kakaoAuthService.getAccessToken(code);
+
+        return ResponseEntity.ok(kakaoAuthService.getMemberInfo(accessToken));
     }
 }
