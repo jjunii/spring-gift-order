@@ -21,10 +21,8 @@ spring:
         format_sql: true
     show-sql: true
     defer-datasource-initialization: true
-
-jwt:
-  secret:
-    key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+  config:
+    import: optional:classpath:env.yaml
 
 logging:
   level:
