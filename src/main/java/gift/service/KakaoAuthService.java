@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.dto.KakaoMemberResponseDto;
 import gift.dto.KakaoTokenResponseDto;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,17 +10,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class KakaoAuthService {
 
-    @Value("${kakao.rest-api-key}")
-    private String kakaoRestApiKey;
+    private final String kakaoRestApiKey;
+    private final String redirectUrl;
+    private final URI kakaoAuthUrl;
+    private final RestClient restClient;
 
-    @Value("${kakao.redirect-url}")
-    private String redirectUrl;
+    public KakaoAuthService(
+            @Value("${kakao.rest-api-key}") String kakaoRestApiKey,
+            @Value("${kakao.redirect-url}") String redirectUrl
+    ) {
+        this.kakaoRestApiKey = kakaoRestApiKey;
+        this.redirectUrl = redirectUrl;
+        this.kakaoAuthUrl = UriComponentsBuilder.fromUriString("https://kauth.kakao.com")
+                                                .path("/oauth/authorize")
+                                                .queryParam("response_type", "code")
+                                                .queryParam("client_id", kakaoRestApiKey)
+                                                .queryParam("redirect_uri", redirectUrl)
+                                                .build().toUri();
+        this.restClient = RestClient.create();
+    }
 
-    private final RestClient restClient = RestClient.create();
+    public URI getKakaoAuthUrl() {
+        return kakaoAuthUrl;
+    }
 
     public String getAccessToken(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
