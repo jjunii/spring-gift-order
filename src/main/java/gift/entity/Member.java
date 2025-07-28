@@ -74,4 +74,8 @@ public class Member {
     public MemberRole getRole() {
         return role;
     }
+
+    public SignupType getSignupType() {
+        return signupType;
+    }
 }

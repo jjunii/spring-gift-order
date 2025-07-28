@@ -5,6 +5,7 @@ import gift.dto.MemberRequestDto;
 import gift.dto.TokenResponseDto;
 import gift.entity.Member;
 import gift.entity.MemberRole;
+import gift.entity.SignupType;
 import gift.exception.EmailAlreadyExistsException;
 import gift.exception.LoginFailedException;
 import gift.repository.MemberRepository;
@@ -47,11 +48,34 @@ public class MemberService {
         Member member = memberRepository.findByEmail(memberRequestDto.email())
                                         .orElseThrow(LoginFailedException::new);
 
+        if (member.getSignupType() == SignupType.KAKAO) {
+            throw new LoginFailedException();
+        }
+
         if (!BCrypt.checkpw(memberRequestDto.password(), member.getPassword())) {
             throw new LoginFailedException();
         }
 
         return new TokenResponseDto(jwtProvider.generateToken(member.getId(), member.getRole()));
+    }
+
+    @Transactional
+    public TokenResponseDto kakaoLogin(String kakaoEmail,
+            String accessToken, String refreshToken) {
+        Member member = memberRepository.findByEmail(kakaoEmail)
+                                        .orElseGet(() -> Member.createKakaoMember(kakaoEmail,
+                                                MemberRole.ROLE_USER));
+
+        if (member.getSignupType() == SignupType.LOCAL) {
+            throw new EmailAlreadyExistsException(kakaoEmail);
+        }
+
+        member.updateKakaoTokens(accessToken, refreshToken);
+
+        Member savedMember = memberRepository.save(member);
+
+        return new TokenResponseDto(
+                jwtProvider.generateToken(savedMember.getId(), savedMember.getRole()));
     }
 
     @Transactional(readOnly = true)
