@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.dto.KakaoMemberResponseDto;
+import gift.dto.KakaoTokenResponseDto;
 import gift.service.KakaoAuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,9 @@ public class KakaoAuthController {
 
     @GetMapping("/auth/kakao/callback")
     public ResponseEntity<KakaoMemberResponseDto> kakaoLogin(@RequestParam("code") String code) {
+        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoAuthService.getToken(code);
 
-        String accessToken = kakaoAuthService.getAccessToken(code);
-
-        return ResponseEntity.ok(kakaoAuthService.getMemberInfo(accessToken));
+        return ResponseEntity.ok(
+                kakaoAuthService.getMemberInfo(kakaoTokenResponseDto.accessToken()));
     }
 }

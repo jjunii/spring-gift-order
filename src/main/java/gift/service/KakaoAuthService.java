@@ -39,7 +39,7 @@ public class KakaoAuthService {
         return kakaoAuthUrl;
     }
 
-    public String getAccessToken(String code) {
+    public KakaoTokenResponseDto getToken(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -59,7 +59,7 @@ public class KakaoAuthService {
         if (kakaoTokenResponseDto == null) {
             throw new RuntimeException("카카오 액세스 토큰 발급 실패");
         }
-        return kakaoTokenResponseDto.accessToken();
+        return kakaoTokenResponseDto;
     }
 
     public KakaoMemberResponseDto getMemberInfo(String accessToken) {
