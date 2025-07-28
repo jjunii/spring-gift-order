@@ -28,7 +28,8 @@ public class MemberRepositoryTest {
 
     @Test
     void save() {
-        Member member = new Member("user@email.com", hashedPassword, MemberRole.ROLE_USER);
+        Member member = Member.createLocalMember("user@email.com", hashedPassword,
+                MemberRole.ROLE_USER);
 
         Member savedMember = memberRepository.save(member);
 
@@ -40,7 +41,8 @@ public class MemberRepositoryTest {
 
     @Test
     void findById() {
-        Member member = new Member("user@email.com", hashedPassword, MemberRole.ROLE_USER);
+        Member member = Member.createLocalMember("user@email.com", hashedPassword,
+                MemberRole.ROLE_USER);
         memberRepository.save(member);
 
         Member foundMember = memberRepository.findById(member.getId()).orElseThrow();
@@ -50,7 +52,8 @@ public class MemberRepositoryTest {
 
     @Test
     void findByEmail() {
-        Member member = new Member("user@email.com", hashedPassword, MemberRole.ROLE_USER);
+        Member member = Member.createLocalMember("user@email.com", hashedPassword,
+                MemberRole.ROLE_USER);
         memberRepository.save(member);
 
         Optional<Member> foundMember1 = memberRepository.findByEmail("fakeUser@email.com");

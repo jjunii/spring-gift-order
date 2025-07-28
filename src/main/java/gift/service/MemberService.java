@@ -30,7 +30,7 @@ public class MemberService {
             throw new EmailAlreadyExistsException(memberRequestDto.email());
         }
 
-        Member member = new Member(
+        Member member = Member.createLocalMember(
                 memberRequestDto.email(),
                 BCrypt.hashpw(memberRequestDto.password(), BCrypt.gensalt()),
                 MemberRole.ROLE_USER

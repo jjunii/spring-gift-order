@@ -13,6 +13,7 @@ import gift.dto.WishRequestDto;
 import gift.dto.WishResponseDto;
 import gift.entity.MemberRole;
 import gift.entity.ProductStatus;
+import gift.entity.SignupType;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -264,10 +265,11 @@ public class WishTest {
     private Long setUpMember(String email, String password, MemberRole role) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(
-                          "INSERT INTO member (email, password, role) VALUES (:email, :hashedPassword, :role)")
+                          "INSERT INTO member (email, password, role, signup_type) VALUES (:email, :hashedPassword, :role, :signup_type)")
                   .param("email", email)
                   .param("hashedPassword", BCrypt.hashpw("password", BCrypt.gensalt()))
                   .param("role", role.name())
+                  .param("signup_type", SignupType.LOCAL.name())
                   .update(keyHolder);
 
         return keyHolder.getKey().longValue();

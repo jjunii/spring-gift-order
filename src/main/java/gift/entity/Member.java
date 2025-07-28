@@ -18,25 +18,45 @@ public class Member {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 60)
+    @Column(nullable = true, length = 60)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private MemberRole role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "signup_type", nullable = false, length = 20)
+    private SignupType signupType;
+
+    @Column(name = "kakao_access_token", nullable = true)
+    private String kakaoAccessToken;
+
+    @Column(name = "kakao_refresh_token", nullable = true)
+    private String kakaoRefreshToken;
+
     protected Member() {
     }
 
-    public Member(String email, String password, MemberRole role) {
-        this(null, email, password, role);
-    }
-
-    public Member(Long id, String email, String password, MemberRole role) {
+    public Member(Long id, String email, String password, MemberRole role, SignupType signupType) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.signupType = signupType;
+    }
+
+    public static Member createLocalMember(String email, String password, MemberRole role) {
+        return new Member(null, email, password, role, SignupType.LOCAL);
+    }
+
+    public static Member createKakaoMember(String email, MemberRole role) {
+        return new Member(null, email, null, role, SignupType.KAKAO);
+    }
+
+    public void updateKakaoTokens(String kakaoAccessToken, String kakaoRefreshToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
+        this.kakaoRefreshToken = kakaoRefreshToken;
     }
 
     public Long getId() {

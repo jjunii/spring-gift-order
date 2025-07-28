@@ -41,7 +41,7 @@ public class WishRepositoryTest {
     void setUp() {
         String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
         testMember = memberRepository.save(
-                new Member("user@email.com", hashedPassword, MemberRole.ROLE_USER));
+                Member.createLocalMember("user@email.com", hashedPassword, MemberRole.ROLE_USER));
         testProduct1 = productRepository.save(
                 new Product("상품A", 10000, "https://example.com/A.jpg", ProductStatus.APPROVED));
         testProduct2 = productRepository.save(
