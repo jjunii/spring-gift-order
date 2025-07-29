@@ -78,4 +78,8 @@ public class Member {
     public SignupType getSignupType() {
         return signupType;
     }
+
+    public String getKakaoAccessToken() {
+        return kakaoAccessToken;
+    }
 }

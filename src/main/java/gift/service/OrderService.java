@@ -1,7 +1,6 @@
 package gift.service;
 
 import gift.dto.OrderRequestDto;
-import gift.dto.OrderResponseDto;
 import gift.entity.Member;
 import gift.entity.Option;
 import gift.entity.Order;
@@ -32,7 +31,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
+    public Order placeOrder(OrderRequestDto orderRequestDto) {
         Long memberId = CurrentMemberContext.getAuthenticatedMemberId();
 
         Member member = memberRepository.findById(memberId).orElseThrow(
@@ -42,12 +41,13 @@ public class OrderService {
                 () -> new OptionNotFoundException(orderRequestDto.optionId()));
         option.subtract(orderRequestDto.quantity());
 
-        Order order = new Order(member, option, orderRequestDto.quantity(),
-                orderRequestDto.message());
-        Order savedOrder = orderRepository.save(order);
-
         wishRepository.deleteByMemberIdAndProductId(member.getId(), option.getProduct().getId());
 
-        return OrderResponseDto.from(savedOrder);
+        return orderRepository.save(
+                new Order(member,
+                        option,
+                        orderRequestDto.quantity(),
+                        orderRequestDto.message()
+                ));
     }
 }
