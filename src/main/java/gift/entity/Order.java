@@ -43,6 +43,10 @@ public class Order {
     protected Order() {
     }
 
+    public Order(Member member, Option option, Integer quantity, String message) {
+        this(null, member, option, quantity, null, message);
+    }
+
     public Order(Long id, Member member, Option option, Integer quantity,
             LocalDateTime orderDateTime, String message) {
         this.id = id;
