@@ -18,6 +18,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
 
+    public static final int MESSAGE_MAX_LENGTH = 500;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +39,7 @@ public class Order {
     @Column(updatable = false, nullable = false)
     private LocalDateTime orderDateTime;
 
-    @Column(length = 500)
+    @Column(length = MESSAGE_MAX_LENGTH)
     private String message;
 
     protected Order() {
