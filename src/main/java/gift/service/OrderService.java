@@ -5,7 +5,6 @@ import gift.dto.OrderResponseDto;
 import gift.entity.Member;
 import gift.entity.Option;
 import gift.entity.Order;
-import gift.entity.SignupType;
 import gift.exception.OptionNotFoundException;
 import gift.exception.UnAuthenticationException;
 import gift.repository.MemberRepository;
@@ -59,7 +58,7 @@ public class OrderService {
                         orderRequestDto.message()
                 ));
 
-        if (savedOrder.getMember().getSignupType() == SignupType.KAKAO) {
+        if (!savedOrder.getMember().checkLocalMember()) {
             try {
                 kakaoMessageService.sendOrderMessage(savedOrder);
             } catch (Exception e) {

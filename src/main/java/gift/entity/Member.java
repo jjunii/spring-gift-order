@@ -58,6 +58,10 @@ public class Member {
         this.kakaoAccessToken = kakaoAccessToken;
         this.kakaoRefreshToken = kakaoRefreshToken;
     }
+    
+    public boolean checkLocalMember() {
+        return signupType == SignupType.LOCAL;
+    }
 
     public Long getId() {
         return id;

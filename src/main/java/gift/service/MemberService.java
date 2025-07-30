@@ -5,7 +5,6 @@ import gift.dto.MemberRequestDto;
 import gift.dto.TokenResponseDto;
 import gift.entity.Member;
 import gift.entity.MemberRole;
-import gift.entity.SignupType;
 import gift.exception.EmailAlreadyExistsException;
 import gift.exception.LoginFailedException;
 import gift.repository.MemberRepository;
@@ -48,7 +47,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(memberRequestDto.email())
                                         .orElseThrow(LoginFailedException::new);
 
-        if (member.getSignupType() == SignupType.KAKAO) {
+        if (!member.checkLocalMember()) {
             throw new LoginFailedException();
         }
 
@@ -66,7 +65,7 @@ public class MemberService {
                                         .orElseGet(() -> Member.createKakaoMember(kakaoEmail,
                                                 MemberRole.ROLE_USER));
 
-        if (member.getSignupType() == SignupType.LOCAL) {
+        if (member.checkLocalMember()) {
             throw new EmailAlreadyExistsException(kakaoEmail);
         }
 
