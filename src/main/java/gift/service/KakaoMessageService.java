@@ -2,6 +2,7 @@ package gift.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gift.config.KakaoApiConstants;
 import gift.dto.KakaoOrderMessageDto;
 import gift.dto.KakaoTokenResponseDto;
 import gift.entity.Member;
@@ -58,7 +59,7 @@ public class KakaoMessageService {
     }
 
     private void sendRequestToKakao(String accessToken, KakaoOrderMessageDto orderMessage) {
-        String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+        String url = KakaoApiConstants.KAPI_BASE_URL + "/v2/api/talk/memo/default/send";
 
         restClient.post()
                   .uri(url)
