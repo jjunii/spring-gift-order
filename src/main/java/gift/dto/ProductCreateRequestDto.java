@@ -1,5 +1,6 @@
 package gift.dto;
 
+import gift.entity.Product;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,7 +12,8 @@ import java.util.List;
 
 public record ProductCreateRequestDto(
         @NotBlank(message = "상품명은 필수입니다.")
-        @Size(max = 15, message = "상품명은 공백을 포함하여 최대 15자까지 입력할 수 있습니다.")
+        @Size(max = Product.PRODUCT_NAME_MAX_LENGTH,
+                message = "상품명은 공백을 포함하여 최대 15자까지 입력할 수 있습니다.")
         @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s()\\[\\]+\\-&/_]*$",
                 message = "상품명에 허용되지 않는 특수문자가 있습니다. 사용가능: ( ), [ ], +, -, &, /, _")
         String name,

@@ -1,43 +1,32 @@
 package gift.controller;
 
 import gift.dto.KakaoMemberResponseDto;
+import gift.dto.KakaoTokenResponseDto;
+import gift.dto.TokenResponseDto;
 import gift.service.KakaoAuthService;
-import java.net.URI;
-import org.springframework.beans.factory.annotation.Value;
+import gift.service.MemberService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 public class KakaoAuthController {
 
     private final KakaoAuthService kakaoAuthService;
+    private final MemberService memberService;
 
-    @Value("${kakao.rest-api-key}")
-    private String kakaoRestApiKey;
-
-    @Value("${kakao.redirect-url}")
-    private String redirectUrl;
-
-    public KakaoAuthController(KakaoAuthService kakaoAuthService) {
+    public KakaoAuthController(KakaoAuthService kakaoAuthService, MemberService memberService) {
         this.kakaoAuthService = kakaoAuthService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/auth/kakao")
     public ResponseEntity<Void> redirectToKakao() {
-        URI uri = UriComponentsBuilder.fromUriString("https://kauth.kakao.com")
-                                      .path("/oauth/authorize")
-                                      .queryParam("response_type", "code")
-                                      .queryParam("client_id", kakaoRestApiKey)
-                                      .queryParam("redirect_uri", redirectUrl)
-                                      .build().toUri();
-
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uri);
+        headers.setLocation(kakaoAuthService.getKakaoAuthUrl());
 
         return ResponseEntity
                 .status(HttpStatus.FOUND)
@@ -46,10 +35,16 @@ public class KakaoAuthController {
     }
 
     @GetMapping("/auth/kakao/callback")
-    public ResponseEntity<KakaoMemberResponseDto> kakaoLogin(@RequestParam("code") String code) {
+    public ResponseEntity<TokenResponseDto> kakaoLogin(@RequestParam("code") String code) {
+        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoAuthService.getToken(code);
+        KakaoMemberResponseDto kakaoMemberDto = kakaoAuthService.getMemberInfo(
+                kakaoTokenResponseDto.accessToken());
 
-        String accessToken = kakaoAuthService.getAccessToken(code);
-
-        return ResponseEntity.ok(kakaoAuthService.getMemberInfo(accessToken));
+        return ResponseEntity.ok(
+                memberService.kakaoLogin(
+                        kakaoMemberDto.kakaoAccount().email(),
+                        kakaoTokenResponseDto.accessToken(),
+                        kakaoTokenResponseDto.refreshToken()
+                ));
     }
 }

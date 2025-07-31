@@ -20,11 +20,13 @@ import jakarta.persistence.UniqueConstraint;
 })
 public class Option {
 
+    public static final int OPTION_NAME_MAX_LENGTH = 50;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = OPTION_NAME_MAX_LENGTH)
     private String name;
 
     @Column(nullable = false)

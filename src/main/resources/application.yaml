@@ -22,7 +22,7 @@ spring:
     show-sql: true
     defer-datasource-initialization: true
   config:
-    import: optional:classpath:env.yaml
+    import: optional:file:env.yaml
 
 logging:
   level:

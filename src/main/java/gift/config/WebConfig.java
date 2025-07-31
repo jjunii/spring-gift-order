@@ -22,6 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
         registrationBean.setFilter(
                 new JwtAuthenticationFilter(jwtProvider, handlerExceptionResolver, memberService));
         registrationBean.addUrlPatterns("/api/wishes/*");
+        registrationBean.addUrlPatterns("/api/orders/*");
 
         return registrationBean;
     }

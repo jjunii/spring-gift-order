@@ -49,7 +49,7 @@ public class MemberTest {
     void 이메일_중복으로_회원가입_실패() {
         String url = "http://localhost:" + port + "/api/members/register";
         jdbcClient.sql(
-                          "INSERT INTO member (email, password, role) VALUES ('user@email.com', 'password', 'ROLE_USER')")
+                          "INSERT INTO member (email, password, role, signup_type) VALUES ('user@email.com', 'password', 'ROLE_USER', 'LOCAL')")
                   .update();
 
         MemberRequestDto memberRequestDto = new MemberRequestDto("user@email.com", "password");
@@ -71,7 +71,7 @@ public class MemberTest {
         String url = "http://localhost:" + port + "/api/members/login";
 
         jdbcClient.sql(
-                          "INSERT INTO member (email, password, role) VALUES ('user@email.com', :hashedPassword, 'ROLE_USER')")
+                          "INSERT INTO member (email, password, role, signup_type) VALUES ('user@email.com', :hashedPassword, 'ROLE_USER', 'LOCAL')")
                   .param("hashedPassword", BCrypt.hashpw("password", BCrypt.gensalt()))
                   .update();
 
@@ -111,7 +111,7 @@ public class MemberTest {
         String url = "http://localhost:" + port + "/api/members/login";
 
         jdbcClient.sql(
-                          "INSERT INTO member (email, password, role) VALUES ('user@email.com', :hashedPassword, 'ROLE_USER')")
+                          "INSERT INTO member (email, password, role, signup_type) VALUES ('user@email.com', :hashedPassword, 'ROLE_USER', 'LOCAL')")
                   .param("hashedPassword", BCrypt.hashpw("password", BCrypt.gensalt()))
                   .update();
 

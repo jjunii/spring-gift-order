@@ -15,11 +15,13 @@ import java.util.List;
 @Entity
 public class Product {
 
+    public static final int PRODUCT_NAME_MAX_LENGTH = 15;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = PRODUCT_NAME_MAX_LENGTH)
     private String name;
 
     @Column(nullable = false)
