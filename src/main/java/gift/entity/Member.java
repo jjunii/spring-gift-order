@@ -56,9 +56,11 @@ public class Member {
 
     public void updateKakaoTokens(String kakaoAccessToken, String kakaoRefreshToken) {
         this.kakaoAccessToken = kakaoAccessToken;
-        this.kakaoRefreshToken = kakaoRefreshToken;
+        if (kakaoRefreshToken != null) {
+            this.kakaoRefreshToken = kakaoRefreshToken;
+        }
     }
-    
+
     public boolean checkLocalMember() {
         return signupType == SignupType.LOCAL;
     }
@@ -79,11 +81,11 @@ public class Member {
         return role;
     }
 
-    public SignupType getSignupType() {
-        return signupType;
-    }
-
     public String getKakaoAccessToken() {
         return kakaoAccessToken;
+    }
+
+    public String getKakaoRefreshToken() {
+        return kakaoRefreshToken;
     }
 }

@@ -72,4 +72,19 @@ public class KakaoAuthService {
                          .body(KakaoMemberResponseDto.class);
     }
 
+    public KakaoTokenResponseDto refreshAccessToken(String refreshToken) {
+        String url = "https://kauth.kakao.com/oauth/token";
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", kakaoRestApiKey);
+        body.add("refresh_token", refreshToken);
+
+        return restClient.post()
+                         .uri(url)
+                         .body(body)
+                         .retrieve()
+                         .body(KakaoTokenResponseDto.class);
+    }
+
 }
