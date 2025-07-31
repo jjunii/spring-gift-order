@@ -32,10 +32,24 @@ public class KakaoMessageService {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new UnAuthenticationException("인증되지 않은 사용자입니다"));
 
-        String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
-
         KakaoOrderMessageDto orderMessage = KakaoOrderMessageDto.from(order);
 
+        sendRequestToKakao(member.getKakaoAccessToken(), orderMessage);
+    }
+
+    private void sendRequestToKakao(String accessToken, KakaoOrderMessageDto orderMessage) {
+        String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+
+        restClient.post()
+                  .uri(url)
+                  .header("Authorization",
+                          "Bearer " + accessToken)
+                  .body(createMessageBody(orderMessage))
+                  .retrieve()
+                  .toBodilessEntity();
+    }
+
+    private MultiValueMap<String, String> createMessageBody(KakaoOrderMessageDto orderMessage) {
         String templateObjectJson;
         try {
             templateObjectJson = objectMapper.writeValueAsString(orderMessage);
@@ -45,13 +59,6 @@ public class KakaoMessageService {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("template_object", templateObjectJson);
-
-        restClient.post()
-                  .uri(url)
-                  .header("Authorization",
-                          "Bearer " + member.getKakaoAccessToken())
-                  .body(body)
-                  .retrieve()
-                  .toBodilessEntity();
+        return body;
     }
 }
