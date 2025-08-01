@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.config.KakaoApiConstants;
 import gift.dto.KakaoMemberResponseDto;
 import gift.dto.KakaoTokenResponseDto;
 import java.net.URI;
@@ -26,7 +27,7 @@ public class KakaoAuthService {
     ) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.redirectUrl = redirectUrl;
-        this.kakaoAuthUrl = UriComponentsBuilder.fromUriString("https://kauth.kakao.com")
+        this.kakaoAuthUrl = UriComponentsBuilder.fromUriString(KakaoApiConstants.KAUTH_BASE_URL)
                                                 .path("/oauth/authorize")
                                                 .queryParam("response_type", "code")
                                                 .queryParam("client_id", kakaoRestApiKey)
@@ -40,7 +41,7 @@ public class KakaoAuthService {
     }
 
     public KakaoTokenResponseDto getToken(String code) {
-        String url = "https://kauth.kakao.com/oauth/token";
+        String url = KakaoApiConstants.KAUTH_BASE_URL + "/oauth/token";
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
@@ -63,7 +64,7 @@ public class KakaoAuthService {
     }
 
     public KakaoMemberResponseDto getMemberInfo(String accessToken) {
-        String url = "https://kapi.kakao.com/v2/user/me";
+        String url = KakaoApiConstants.KAPI_BASE_URL + "/v2/user/me";
 
         return restClient.get()
                          .uri(url)
@@ -73,7 +74,7 @@ public class KakaoAuthService {
     }
 
     public KakaoTokenResponseDto refreshAccessToken(String refreshToken) {
-        String url = "https://kauth.kakao.com/oauth/token";
+        String url = KakaoApiConstants.KAUTH_BASE_URL + "/oauth/token";
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "refresh_token");

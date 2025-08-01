@@ -1,7 +1,8 @@
 package gift.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gift.config.KakaoApiConstants;
+import gift.dto.KakaoMessageRequestDto;
 import gift.dto.KakaoOrderMessageDto;
 import gift.dto.KakaoTokenResponseDto;
 import gift.entity.Member;
@@ -11,8 +12,6 @@ import gift.repository.MemberRepository;
 import gift.util.CurrentMemberContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -40,9 +39,10 @@ public class KakaoMessageService {
                 () -> new UnAuthenticationException("인증되지 않은 사용자입니다"));
 
         KakaoOrderMessageDto orderMessage = KakaoOrderMessageDto.from(order);
+        KakaoMessageRequestDto requestBody = new KakaoMessageRequestDto(orderMessage);
 
         try {
-            sendRequestToKakao(member.getKakaoAccessToken(), orderMessage);
+            sendRequestToKakao(member.getKakaoAccessToken(), requestBody);
         } catch (HttpClientErrorException.Unauthorized e) {
             KakaoTokenResponseDto newToken = kakaoAuthService.refreshAccessToken(
                     member.getKakaoRefreshToken());
@@ -53,32 +53,19 @@ public class KakaoMessageService {
             );
             memberRepository.save(member);
 
-            sendRequestToKakao(newToken.accessToken(), orderMessage);
+            sendRequestToKakao(newToken.accessToken(), requestBody);
         }
     }
 
-    private void sendRequestToKakao(String accessToken, KakaoOrderMessageDto orderMessage) {
-        String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+    private void sendRequestToKakao(String accessToken, KakaoMessageRequestDto requestBody) {
+        String url = KakaoApiConstants.KAPI_BASE_URL + "/v2/api/talk/memo/default/send";
 
         restClient.post()
                   .uri(url)
                   .header("Authorization",
                           "Bearer " + accessToken)
-                  .body(createMessageBody(orderMessage))
+                  .body(requestBody.toMultiValueMap(objectMapper))
                   .retrieve()
                   .toBodilessEntity();
-    }
-
-    private MultiValueMap<String, String> createMessageBody(KakaoOrderMessageDto orderMessage) {
-        String templateObjectJson;
-        try {
-            templateObjectJson = objectMapper.writeValueAsString(orderMessage);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("카카오 메세지 템플릿 생성에 실패했습니다.");
-        }
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("template_object", templateObjectJson);
-        return body;
     }
 }
